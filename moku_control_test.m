@@ -7,9 +7,9 @@ channels = [1,2];
 awg = MokuArbitraryWaveformGenerator('localhost:8090',  force_connect = true);
 
 %% Create time axis
-total_time = 2;
+total_time = 5;
 num_points = 1000;
-num_reps = 2;
+num_reps = 1;
 
 time = linspace(0,total_time, num_points);
 
@@ -23,9 +23,9 @@ frequency = 1 / total_time;
 % end
 
 %% define functions
-
-vx = sin(time * 2 * pi);
-vy = sin(1 * time * 2 * pi);
+t = time / 10 / total_time;
+vx = sin(100 * t * 2 * pi);
+vy = sin(1.1 * 100 * t * 2 * pi);
 
 %% heart shape
 t = time / total_time * 2 * pi;
