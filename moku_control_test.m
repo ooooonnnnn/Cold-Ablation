@@ -6,24 +6,15 @@ channels = [1,2];
 % This should be done after setting a proxy
 awg = MokuArbitraryWaveformGenerator('localhost:8090',  force_connect = true);
 
-%% burst modulation: this gives one-shot waves
-for ch = channels
-    awg.burst_modulate(ch, 'Manual', 'NCycle', 'burst_cycles', 100);
-    % awg.set_output_termination(ch, 'HiZ');
-end
-
-%% Define data
-% time_settings = [
-% TimeData("31.25Ms", 31.25e6, 65536)
-% ];
-
-%%%%%%%%%% Test Command
 %% Create time axis
-time_config = time_settings(1);
-total_time = 1;
+total_time = 2;
+num_points = 1000;
+num_reps = 2;
 
-% time = 0:time_config.delta_time:total_time;
-time = linspace(0,1);
+time = linspace(0,total_time, num_points);
+
+% calculate frequency
+frequency = 1 / total_time;
 
 % validate time axis
 % if (numel(time) > time_config.max_samples || ...
@@ -31,23 +22,45 @@ time = linspace(0,1);
 %     error(['Time vector too long, max: ' num2str(time_config.max_time) 's'])
 % end
 
-v1 = sin(time * 2 * pi);
-v2 = cos(time * 2 * pi);
+%% define functions
 
-% figure(1);
+vx = sin(time * 2 * pi);
+vy = sin(1 * time * 2 * pi);
+
+%% heart shape
+t = time / total_time * 2 * pi;
+vx = -16*sin(t).^3;
+vy = -1 * (13*cos(t) - 5*cos(2*t) - 2*cos(3*t) - 1*cos(4*t));
+
+%% plot
+
+figure(1);
+tiledlayout('flow');
+
+nexttile
+plot(time, vx)
+title("X voltage");
+
+nexttile
+plot(time, vy);
+title("Y voltage");
+
+nexttile([2,2])
+plot(-vx,-vy)
+title("shape");
 %plot(time,v);
 
+%% Load shapes
 % sample rate out of {Auto, 125Ms, 62.5Ms, 31.25Ms}
 sample_rate = 'Auto';
-lut_data = v1;
-frequency = 1e0;
 amplitude = 1;
-awg.generate_waveform(1, sample_rate, v1, frequency, amplitude);
-awg.generate_waveform(2, sample_rate, v2, frequency*1.1, amplitude);
+awg.generate_waveform(1, sample_rate, vx, frequency, amplitude);
+awg.generate_waveform(2, sample_rate, vy, frequency, amplitude);
+awg.sync_phase();
 
 %% trigger
 for ch = channels
-    % awg.burst_modulate(ch, 'Manual', 'NCycle', 'burst_cycles', 100);
+    awg.burst_modulate(ch, 'Manual', 'NCycle', 'burst_cycles', num_reps);
     awg.enable_output(ch, 'enable', true);
 end
 
