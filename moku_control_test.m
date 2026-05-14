@@ -5,11 +5,12 @@ channels = [1,2];
 %% Setup device
 % This should be done after setting a proxy
 awg = MokuArbitraryWaveformGenerator('localhost:8090',  force_connect = true);
-
 %% Create time axis
-total_time = 5;
+total_time = 1;
 num_points = 1000;
 num_reps = 1;
+
+max_allowed_points = 65536;
 
 time = linspace(0,total_time, num_points);
 
@@ -28,9 +29,9 @@ vx = sin(100 * t * 2 * pi);
 vy = sin(1.1 * 100 * t * 2 * pi);
 
 %% heart shape
-t = time / total_time * 2 * pi;
-vx = -16*sin(t).^3;
-vy = -1 * (13*cos(t) - 5*cos(2*t) - 2*cos(3*t) - 1*cos(4*t));
+% t = time / total_time * 2 * pi;
+% vx = -16*sin(t).^3;
+% vy = -1 * (13*cos(t) - 5*cos(2*t) - 2*cos(3*t) - 1*cos(4*t));
 
 %% plot
 
