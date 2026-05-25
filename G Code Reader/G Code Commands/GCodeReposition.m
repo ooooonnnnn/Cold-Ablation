@@ -6,7 +6,11 @@ classdef GCodeReposition < GCodeCommand
 
 
     methods
-        function varargout = GetMovement(obj, lastPosition, deltaTime)
+        function paths = GetMovement(obj, deltaTime, varargin)
+            lastPosition = obj.GetValuesFromNameValuePairs( ...
+                [GCodeAxisName.x, GCodeAxisName.y], varargin{:});
+
+
             distance = sqrt((obj.targetPosition - lastPosition).^2);
             time = 0:deltaTime:(distance / obj.speed);
             numPoints = length(time);
@@ -14,7 +18,7 @@ classdef GCodeReposition < GCodeCommand
             x = linspace(lastPosition(1), obj.targetPosition(1), numPoints);
             y = linspace(lastPosition(2), obj.targetPosition(2), numPoints);
 
-            varargout = {GCodeAxisName.x, x, GCodeAxisName.y, y};
+            paths = {GCodeAxisName.x, x, GCodeAxisName.y, y};
         end
     end
 end
