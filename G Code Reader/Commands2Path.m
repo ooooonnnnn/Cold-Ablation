@@ -30,13 +30,13 @@ function [time, movements] = Commands2Path(deltaTime, commands, axisName, axisIn
         %get new move from command
         newMove = command.GetMovement(deltaTime, lastPosDict);
         affectedAxes = keys(newMove);
-        numMovePoints = length(newMove(affectedAxes(1)));
+        numMovePoints = length(cell2mat(newMove(affectedAxes(1))));
 
         for axis = axes
             if isKey(newMove, axis)
                 newPoints = newMove(axis);
             else
-                newPoints = repelem(lastPosDict(axis), [numMovePoints, 1]);
+                newPoints = {repmat(lastPosDict(axis), [1, numMovePoints])};
             end
 
             movements(axis) = {[cell2mat(movements(axis)) , newPoints{1}]};

@@ -1,8 +1,8 @@
 clc
 repo1 = GCodeReposition(1, [0.5, 0.5]);
 repo2 = GCodeReposition(1, [0, 0]);
-[time, movement] = Commands2Path(1e-1, [repo1 ,repo2], "x", -1, "y", 0);
-movement("x")
+[time, movement] = Commands2Path(1e-1, [repo1 ,repo2], "x", 0, "y", 0, "s", 1);
+movement("s")
 movement("y")
 %%
 enums = enumeration(GCodeAxisName.x);
