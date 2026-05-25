@@ -1,0 +1,11 @@
+clc
+repo1 = GCodeReposition(1, [0.5, 0.5]);
+repo2 = GCodeReposition(1, [0, 0]);
+movement = Commands2Path(1e-1, [repo1 ,repo2], "x", 0, "y", 1);
+movement("x")
+movement("y")
+%%
+enums = enumeration(GCodeAxisName.x);
+d = dictionary(enums(1), 0);
+
+d([GCodeAxisName.x, GCodeAxisName.y])
