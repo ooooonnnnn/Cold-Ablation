@@ -1,11 +1,10 @@
-clc
-repo1 = GCodeReposition(1, [0.5, 0.5]);
-repo2 = GCodeReposition(1, [0, 0]);
-[time, movement] = Commands2Path(1e-1, [repo1 ,repo2], "x", 0, "y", 0, "s", 1);
-movement("s")
-movement("y")
-%%
-enums = enumeration(GCodeAxisName.x);
-d = dictionary(enums(1), 0);
+clear
+mode = GCodeReaderMode.linearReposition;
+cm1 = mode.GetCommand(GCodeReaderMode.linearReposition);
+cm2 = mode.GetCommand(GCodeReaderMode.linearOperation);
 
-d([GCodeAxisName.x, GCodeAxisName.y])
+%%
+cm2.feedrate = 60e3;
+cm2.targetPosition(["x", "y"]) = [1000, 1000];
+cm2.GetMovement(1e-3, ...
+    dictionary("x", 0, "y", 0));

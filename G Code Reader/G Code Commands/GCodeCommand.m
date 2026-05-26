@@ -1,9 +1,14 @@
 classdef (Abstract) GCodeCommand < handle
     %base class for G Code Commands
 
+    properties
+        feedrate (1,1) double
+        targetPosition (1,1) dictionary
+    end
+
     methods (Abstract)
         movement = GetMovement(obj, deltaTime, initialAxisPos);
-        %dictionary<GCodeAxisName, values> = GetMovement(obj, deltaTime, dictionary<GCodeAxisName, initialValue>)
+        %dictionary<GCodeAxisName, double> = GetMovement(obj, deltaTime, dictionary<GCodeAxisName, initialValue>)
         %deltaTime: time resolution
         %
         %returns vectors that describe the movement: a dictionary of 
