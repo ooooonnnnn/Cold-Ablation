@@ -85,6 +85,7 @@ while ~feof(raw_gcode_file)
                 end
             end
         end
+
         % Check the current mode and calculate the next points along the
         % path: linear modes
         if current_mode == Linear_interpolation || current_mode == Rapid_positioning
@@ -146,5 +147,6 @@ end
 if plot_path
     plot3(toolPath(:,1),toolPath(:,2),toolPath(:,3),'r-')
 end
+
 fclose(raw_gcode_file);
 end
