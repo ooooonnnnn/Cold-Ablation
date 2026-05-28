@@ -2,13 +2,12 @@ classdef GCodeReaderMode < handle
     %both an enumeration of states and a factory of GCodeCommand
 
     enumeration
-        linearReposition, linearOperation
+        undefined, linearReposition, linearOperation
     end
 
-    methods
-        function command = GetCommand(obj, mode)
+    methods (Static)
+        function command = GetCommand(mode)
             arguments
-                obj 
                 mode (1,1) GCodeReaderMode
             end
 
@@ -20,7 +19,7 @@ classdef GCodeReaderMode < handle
                     command = GCodeLinear;
                     command.targetPosition("s") = 1;
                 otherwise
-                    error(['Unsupported mode: ' string(mode)])
+                    error(['Unsupported mode: ' char(string(mode))])
             end
         end
     end

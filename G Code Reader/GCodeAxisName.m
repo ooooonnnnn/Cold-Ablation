@@ -1,6 +1,6 @@
 classdef GCodeAxisName
     enumeration
-        x, y, %lateral position
-        s, %laser power
+        X, Y, %lateral position
+        S, %laser power
     end
 end

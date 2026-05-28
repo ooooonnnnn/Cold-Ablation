@@ -1,7 +1,9 @@
 function commands = GCode2Commands(filepath)
     %reads a g code file in filepath and returns an array of GCodeCommand
 
-    
+    currentMode = GCodeReaderMode.undefined;
+    currentFeedrate = 0;
+    commands = [];
 
     raw_gcode_file = fopen(filepath);
 
@@ -30,7 +32,42 @@ function commands = GCode2Commands(filepath)
 
         %%
         words = strsplit(cleanLine, ' ');
-        firstWord = words{1};
-        switch
+
+        for wordCell = words
+            targetAxisValues = dictionary;
+
+            word = wordCell{1};
+            code = word(1);
+            value = word(2:end);
+
+            switch code
+                case 'N'
+                    continue
+                case 'G'
+                    switch value
+                        case '0'
+                            currentMode = GCodeReaderMode.linearReposition;
+                        case '1'
+                            currentMode = GCodeReaderMode.linearOperation;
+                        otherwise
+                            currentMode = "undefined";
+                    end
+                case 'F'
+                    currentFeedrate = str2double(value);
+                otherwise
+                    targetAxisValues(code) = str2double(value);
+            end
+
+            try
+                newCommand = GCodeReaderMode.GetCommand(currentMode);
+            catch e
+                continue
+            end
+
+            newCommand.targetPosition = targetAxisValues;
+            newCommand.feedrate = currentFeedrate;
+
+            commands = [commands newCommand];
+        end
     end
 end
