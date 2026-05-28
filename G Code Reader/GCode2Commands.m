@@ -3,6 +3,7 @@ function commands = GCode2Commands(filepath)
 
     currentMode = GCodeReaderMode.undefined;
     currentFeedrate = 0;
+    feedrateConvert = 1/60; %conversion from mm/min or inch/min to mm/sec
     commands = [];
 
     raw_gcode_file = fopen(filepath);
@@ -32,9 +33,9 @@ function commands = GCode2Commands(filepath)
 
         %%
         words = strsplit(cleanLine, ' ');
+        targetAxisValues = dictionary;
 
         for wordCell = words
-            targetAxisValues = dictionary;
 
             word = wordCell{1};
             code = word(1);
@@ -57,17 +58,18 @@ function commands = GCode2Commands(filepath)
                 otherwise
                     targetAxisValues(code) = str2double(value);
             end
-
-            try
-                newCommand = GCodeReaderMode.GetCommand(currentMode);
-            catch e
-                continue
-            end
-
-            newCommand.targetPosition = targetAxisValues;
-            newCommand.feedrate = currentFeedrate;
-
-            commands = [commands newCommand];
         end
+        
+        try
+            newCommand = GCodeReaderMode.GetCommand(currentMode);
+        catch e
+            continue
+        end
+
+        newCommand.targetPosition(targetAxisValues.keys) = ...
+            targetAxisValues(targetAxisValues.keys);
+        newCommand.feedrate = currentFeedrate * feedrateConvert;
+
+        commands = [commands newCommand];
     end
 end

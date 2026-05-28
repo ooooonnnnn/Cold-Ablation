@@ -1,10 +1,21 @@
 clear
-mode = GCodeReaderMode.linearReposition;
-cm1 = mode.GetCommand(GCodeReaderMode.linearReposition);
-cm2 = mode.GetCommand(GCodeReaderMode.linearOperation);
+clc
+commands = GCode2Commands("g codes files\testGCode.txt");
+[time, movements] = Commands2Path(1e-2, commands, "X", 0, "Y", 0, "S", 0);
+
+x = cell2mat(movements("X"));
+y = cell2mat(movements("Y"));
+s = cell2mat(movements("S"));
 
 %%
-cm2.feedrate = 60e3;
-cm2.targetPosition(["x", "y"]) = [1000, 1000];
-cm2.GetMovement(1e-3, ...
-    dictionary("x", 0, "y", 0));
+
+laserOn = s >= 0.5;
+laserOff = ~laserOn;
+
+figure(1)
+clf
+axes
+hold on
+plot(x(laserOn), y(laserOn), 'r.')
+
+plot(x(laserOff), y(laserOff), 'k.')

@@ -14,10 +14,10 @@ classdef GCodeReaderMode < handle
             switch mode
                 case GCodeReaderMode.linearReposition
                     command = GCodeLinear;
-                    command.targetPosition("s") = 0;
+                    command.targetPosition("S") = 0;
                 case GCodeReaderMode.linearOperation
                     command = GCodeLinear;
-                    command.targetPosition("s") = 1;
+                    command.targetPosition("S") = 1;
                 otherwise
                     error(['Unsupported mode: ' char(string(mode))])
             end
