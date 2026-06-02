@@ -4,7 +4,7 @@ function commands = GCode2Commands(filepath)
     currentMode = GCodeReaderMode.undefined;
     currentFeedrate = 0;
     feedrateConvert = 1/60; %conversion from mm/min or inch/min to mm/sec
-    commands = [];
+    commands = {};
 
     raw_gcode_file = fopen(filepath);
 
@@ -50,6 +50,10 @@ function commands = GCode2Commands(filepath)
                             currentMode = GCodeReaderMode.linearReposition;
                         case '1'
                             currentMode = GCodeReaderMode.linearOperation;
+                        case '2'
+                            currentMode = GCodeReaderMode.arcCw;
+                        case '3'
+                            currentMode = GCodeReaderMode.arcCcw;
                         otherwise
                             currentMode = "undefined";
                     end
@@ -59,10 +63,21 @@ function commands = GCode2Commands(filepath)
                     targetAxisValues(code) = str2double(value);
             end
         end
+
+        %% validate parameters
+        % can't use both i/j and r 
+        ijrUsed = isKey(targetAxisValues, ["I", "J", "R"]);
+        if any(ijrUsed(1:2)) && ijrUsed(3)
+            error("GCode line can't specify for I/J and R")
+        end
+
+        %% create command
         
         try
             newCommand = GCodeReaderMode.GetCommand(currentMode);
         catch e
+            warning(e.message)
+            warning(['Skipped unknown command ' cleanLine])
             continue
         end
 
@@ -70,6 +85,6 @@ function commands = GCode2Commands(filepath)
             targetAxisValues(targetAxisValues.keys);
         newCommand.feedrate = currentFeedrate * feedrateConvert;
 
-        commands = [commands newCommand];
+        commands = [commands {newCommand}];
     end
 end
