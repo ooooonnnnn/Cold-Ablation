@@ -16,17 +16,25 @@ classdef GCodeReaderMode < handle
             switch mode
                 case GCodeReaderMode.linearReposition
                     command = GCodeLinear;
-                    command.targetPosition("S") = 0;
+                    
                 case GCodeReaderMode.linearOperation
                     command = GCodeLinear;
-                    command.targetPosition("S") = 1;
-                case GCodeReaderMode.arcCw
+                    
+                case {GCodeReaderMode.arcCw,...
+                        GCodeReaderMode.arcCcw}
                     command = GCodeArc;
-                    command.clockwise = true;
-                    command.targetPosition("S") = 1;
+                    command.clockwise = mode == GCodeReaderMode.arcCw;
+                    
                 otherwise
                     error(['Unsupported mode: ' char(string(mode))])
             end
+
+            if mode == GCodeReaderMode.linearReposition
+                command.targetPosition("S") = 0;
+            else
+                command.targetPosition("S") = 1;
+            end
+
         end
     end
 end
