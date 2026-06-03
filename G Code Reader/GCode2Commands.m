@@ -68,7 +68,7 @@ function commands = GCode2Commands(filepath)
         % can't use both i/j and r 
         ijrUsed = isKey(targetAxisValues, ["I", "J", "R"]);
         if any(ijrUsed(1:2)) && ijrUsed(3)
-            error("GCode line can't specify for I/J and R")
+            error("GCode line can't specify both I/J and R")
         end
 
         %% create command

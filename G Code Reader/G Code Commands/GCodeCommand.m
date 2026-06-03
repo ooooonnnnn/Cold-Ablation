@@ -7,7 +7,7 @@ classdef (Abstract) GCodeCommand < handle
     end
 
     methods (Abstract)
-        movement = GetMovement(obj, deltaTime, initialAxisPos);
+        paths = GetMovement(obj, deltaTime, initialAxisPos);
         %dictionary<GCodeAxisName, double> = GetMovement(obj, deltaTime, dictionary<GCodeAxisName, initialValue>)
         %deltaTime: time resolution
         %

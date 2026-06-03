@@ -4,12 +4,12 @@ classdef GCodeArc < GCodeCommand
     end
 
     methods
-        function movement = GetMovement(obj, deltaTime, initialAxisPos)
+        function paths = GetMovement(obj, deltaTime, initialAxisPos)
             startPos = initialAxisPos(["X", "Y"]);
 
             endPos = nan(size(startPos));
             keys = ["X" ,"Y"];
-            keysExist = isKey(obj.targetPosition(keys));
+            keysExist = isKey(obj.targetPosition, keys);
             endPos(keysExist) = obj.targetPosition(keys(keysExist));
             endPos(isnan(endPos)) = startPos(isnan(endPos));
 
@@ -17,8 +17,8 @@ classdef GCodeArc < GCodeCommand
                 startPos, endPos);
 
             % order angles according to arc direction
-            angles = [atan2(startPos - center(1,:)), atan2(endPos - center(1,:));
-                      atan2(startPos - center(2,:)), atan2(endPos - center(2,:))];
+            angles = [angle2d(startPos - center(1,:)), angle2d(endPos - center(1,:));
+                      angle2d(startPos - center(2,:)), angle2d(endPos - center(2,:))];
             
             for i = 1:2
                 if obj.clockwise && (angles(i,2) > angles(i,1))
@@ -36,19 +36,18 @@ classdef GCodeArc < GCodeCommand
 
                 angles = angles(isMinorArc & isDesiredMinArc, :);
                 center = center(isMinorArc & isDesiredMinArc, :);
-            else
-                angles = angles(1,:);
-                center = center(1,:);
             end
+            angles = angles(1,:);
+            center = center(1,:);
             
             angleDelta = abs(diff(angles));
             angularVel = obj.feedrate / radius;
             time = deltaTime:deltaTime:angleDelta/angularVel;
             numPoints = length(time);
-            movementAngles = linspace(angles(1), angles(2), length(numPoints));
+            movementAngles = linspace(angles(1), angles(2), numPoints);
             
-            x = center(1) + cos(movementAngles);
-            y = center(2) + sin(movementAngles);
+            x = center(1) + radius*cos(movementAngles);
+            y = center(2) + radius*sin(movementAngles);
             s = linspace(obj.targetPosition("S"), obj.targetPosition("S"), numPoints);
 
             x = x(2:end);
@@ -69,9 +68,9 @@ classdef GCodeArc < GCodeCommand
             radius = nan;
             
             keys = ["I", "J"];
-            if isKey(obj.targetPosition, keys)
+            if any(isKey(obj.targetPosition, keys))
                 
-                keysExist = isKey(obj.targetPosition(keys));
+                keysExist = isKey(obj.targetPosition, keys);
 
                 center1(keysExist) = center1(keysExist) ...
                     + obj.targetPosition(keys(keysExist));
