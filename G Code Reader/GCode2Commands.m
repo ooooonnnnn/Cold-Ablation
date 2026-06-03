@@ -11,7 +11,7 @@ function commands = GCode2Commands(filepath)
     while ~feof(raw_gcode_file)
         currentLine = fgetl(raw_gcode_file);
         
-        % skip non-command lines
+        % skip comment lines
         if currentLine(1) == "%" || currentLine(1) == ":"
             continue
         end

@@ -1,6 +1,6 @@
 clear
 clc
-commands = GCode2Commands("g codes files\testGCode.txt");
+commands = GCode2Commands("g codes files\testArcs.txt");
 [time, movements] = Commands2Path(1e-2, commands, "X", 0, "Y", 0, "S", 0);
 
 x = cell2mat(movements("X"));
