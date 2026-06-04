@@ -2,7 +2,9 @@ classdef GCodeReaderMode < handle
     %both an enumeration of states and a factory of GCodeCommand
 
     enumeration
-        undefined, linearReposition, linearOperation
+        undefined, 
+        linearReposition, linearOperation,
+        arcCw, arcCcw
     end
 
     methods (Static)
@@ -14,13 +16,25 @@ classdef GCodeReaderMode < handle
             switch mode
                 case GCodeReaderMode.linearReposition
                     command = GCodeLinear;
-                    command.targetPosition("S") = 0;
+                    
                 case GCodeReaderMode.linearOperation
                     command = GCodeLinear;
-                    command.targetPosition("S") = 1;
+                    
+                case {GCodeReaderMode.arcCw,...
+                        GCodeReaderMode.arcCcw}
+                    command = GCodeArc;
+                    command.clockwise = mode == GCodeReaderMode.arcCw;
+                    
                 otherwise
                     error(['Unsupported mode: ' char(string(mode))])
             end
+
+            if mode == GCodeReaderMode.linearReposition
+                command.targetPosition("S") = 0;
+            else
+                command.targetPosition("S") = 1;
+            end
+
         end
     end
 end

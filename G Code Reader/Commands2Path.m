@@ -4,7 +4,7 @@ function [time, movements] = Commands2Path(deltaTime, commands, axisName, axisIn
 
     arguments
         deltaTime (1,1) double
-        commands (1,:) GCodeCommand
+        commands (1,:) cell
     end
 
     arguments (Repeating)
@@ -19,7 +19,8 @@ function [time, movements] = Commands2Path(deltaTime, commands, axisName, axisIn
 
     movements = dictionary(axes, axisInitVal);
 
-    for command = commands
+    for commandCell = commands
+        command = commandCell{1};
         %get last position
         lastPosDict = dictionary;
         for name = axes
