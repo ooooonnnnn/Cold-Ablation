@@ -3,6 +3,11 @@ classdef GCodeArc < GCodeCommand
         clockwise (1,1) logical = true;
     end
 
+    properties (Constant)
+        radiusTolerance = 0.1; 
+        %mm. allowed difference between distances of start -> center and end -> center
+    end
+
     methods
         function paths = GetMovement(obj, deltaTime, initialAxisPos)
             startPos = initialAxisPos(["X", "Y"]);
@@ -34,8 +39,8 @@ classdef GCodeArc < GCodeCommand
             if isKey(obj.targetPosition, "R")
                 isDesiredMinArc = sign(obj.targetPosition("R")) > 0;
 
-                angles = angles(isMinorArc & isDesiredMinArc, :);
-                center = center(isMinorArc & isDesiredMinArc, :);
+                angles = angles(isMinorArc == isDesiredMinArc, :);
+                center = center(isMinorArc == isDesiredMinArc, :);
             end
             angles = angles(1,:);
             center = center(1,:);
@@ -63,37 +68,56 @@ classdef GCodeArc < GCodeCommand
 
     methods (Access = private)
         function [radius, center] = CalculateCenterRadius(obj, startPos, endPos)
-            center1 = startPos;
-            center2 = [nan nan];
+            pivot1 = startPos;
+            pivot2 = [nan nan];
+            desiredPivot = pivot1;
             radius = nan;
+
+            middle = (startPos + endPos)/2;
+            start2end = norm(startPos - endPos);
+            perpendicularDir = [startPos(2) - endPos(2), ...
+                    endPos(1) - startPos(1)]/start2end;
             
             keys = ["I", "J"];
             if any(isKey(obj.targetPosition, keys))
                 
                 keysExist = isKey(obj.targetPosition, keys);
 
-                center1(keysExist) = center1(keysExist) ...
+                desiredPivot(keysExist) = desiredPivot(keysExist) ...
                     + obj.targetPosition(keys(keysExist));
-                center2 = center1;
 
-                radius = norm(startPos - center1);
+                %% check pivot point distances
+                start2center = norm(startPos - desiredPivot);
+                end2center = norm(endPos - desiredPivot);
+                if abs(end2center - start2center) > obj.radiusTolerance
+                    error("Pivot point has different distances from start and end points");
+                end
+                
+                %% find ideal pivot point
+                % closest point to the original pivot point, that lies on
+                % the mid line between the start and end points
+                pivot1 = middle...
+                    + (desiredPivot - middle) * (perpendicularDir')...
+                    * perpendicularDir;
+                pivot2 = pivot1;
+
+                radius = norm(startPos - pivot1);
 
             else
                 radius = abs(obj.targetPosition("R"));
-                start2end = norm(startPos - endPos);
-                if start2end > radius*2
+                
+                if start2end / 2 > radius + obj.radiusTolerance
                     error("radius too small for arc movement")
                 end
-                middle = (startPos + endPos)/2;
+                radius = max([radius, start2end / 2]);
+                
                 height = sqrt(radius^2 - (start2end^2)/4);
-                perpendicularDir = [startPos(2) - endPos(2), ...
-                    endPos(1) - startPos(1)]/start2end;
 
-                center1 = middle + height * perpendicularDir;
-                center2 = middle - height * perpendicularDir;
+                pivot1 = middle + height * perpendicularDir;
+                pivot2 = middle - height * perpendicularDir;
             end
 
-            center = [center1; center2];
+            center = [pivot1; pivot2];
         end
     end
 end
