@@ -39,8 +39,8 @@ classdef GCodeArc < GCodeCommand
             if isKey(obj.targetPosition, "R")
                 isDesiredMinArc = sign(obj.targetPosition("R")) > 0;
 
-                angles = angles(isMinorArc & isDesiredMinArc, :);
-                center = center(isMinorArc & isDesiredMinArc, :);
+                angles = angles(isMinorArc == isDesiredMinArc, :);
+                center = center(isMinorArc == isDesiredMinArc, :);
             end
             angles = angles(1,:);
             center = center(1,:);
@@ -106,9 +106,10 @@ classdef GCodeArc < GCodeCommand
             else
                 radius = abs(obj.targetPosition("R"));
                 
-                if start2end > radius * 2
+                if start2end / 2 > radius + obj.radiusTolerance
                     error("radius too small for arc movement")
                 end
+                radius = max([radius, start2end / 2]);
                 
                 height = sqrt(radius^2 - (start2end^2)/4);
 
