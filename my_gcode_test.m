@@ -4,7 +4,7 @@
 
 clear
 clc
-commands = GCode2Commands("g codes files\complex pocket.nc");
+commands = GCode2Commands("g codes files\cone 2mm 2mm_preprocessed.nc");
 [time, movements] = Commands2Path( ...
     1e-3, commands, ...
     "X", 0, "Y", 0, "Z", 0, "S", 0);
