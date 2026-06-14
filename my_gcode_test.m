@@ -1,10 +1,19 @@
+%isequal(GCodeReaderMode.undefined, GCodeReaderMode.arcCcw)
+
+%%
+
 clear
 clc
-commands = GCode2Commands("g codes files\testArcs.txt");
-[time, movements] = Commands2Path(1e-2, commands, "X", 0, "Y", 0, "S", 0);
+commands = GCode2Commands("g codes files\cone 2mm 2mm.nc");
+[time, movements] = Commands2Path( ...
+    1e-3, commands, ...
+    "X", 0, "Y", 0, "Z", 0, "S", 0);
+
+%%
 
 x = cell2mat(movements("X"));
 y = cell2mat(movements("Y"));
+z = cell2mat(movements("Z"));
 s = cell2mat(movements("S"));
 %%
 
@@ -15,7 +24,7 @@ figure(1)
 clf
 axes
 hold on
-plot(x(laserOn), y(laserOn), 'r.')
+plot3(x(laserOn), y(laserOn), z(laserOn), 'r.')
 
-plot(x(laserOff), y(laserOff), 'k.')
+plot3(x(laserOff), y(laserOff), z(laserOff), 'k.')
 

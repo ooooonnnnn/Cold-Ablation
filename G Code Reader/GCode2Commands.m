@@ -7,8 +7,11 @@ function commands = GCode2Commands(filepath)
     commands = {};
 
     raw_gcode_file = fopen(filepath);
+    global LINE_NUMBER;
+    LINE_NUMBER = 0;
 
     while ~feof(raw_gcode_file)
+        LINE_NUMBER = LINE_NUMBER + 1;
         currentLine = fgetl(raw_gcode_file);
         
         % skip comment lines
@@ -65,10 +68,12 @@ function commands = GCode2Commands(filepath)
         end
 
         %% validate parameters
-        % can't use both i/j and r 
-        ijrUsed = isKey(targetAxisValues, ["I", "J", "R"]);
-        if any(ijrUsed(1:2)) && ijrUsed(3)
-            error("GCode line can't specify both I/J and R")
+        if ~(currentMode == "undefined")
+            % can't use both i/j and r 
+            ijrUsed = isKey(targetAxisValues, ["I", "J", "R"]);
+            if any(ijrUsed(1:2)) && ijrUsed(3)
+                error("GCode line can't specify both I/J and R")
+            end
         end
 
         %% create command

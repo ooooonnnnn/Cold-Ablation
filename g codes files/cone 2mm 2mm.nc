@@ -20,6 +20,7 @@ M6 T1
 (begin operation: Pocket3D)
 (machine: not set, mm/min)
 (Pocket3D)
+F1500
 G0 Z0.100
 G0 X0.565 Y0.565 Z0.000
 G0 Z0.100

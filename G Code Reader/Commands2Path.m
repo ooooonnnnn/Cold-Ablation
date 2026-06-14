@@ -19,7 +19,10 @@ function [time, movements] = Commands2Path(deltaTime, commands, axisName, axisIn
 
     movements = dictionary(axes, axisInitVal);
 
+    global COMMAND_NUM;
+    COMMAND_NUM = 0;
     for commandCell = commands
+        COMMAND_NUM = COMMAND_NUM + 1;
         command = commandCell{1};
         %get last position
         lastPosDict = dictionary;

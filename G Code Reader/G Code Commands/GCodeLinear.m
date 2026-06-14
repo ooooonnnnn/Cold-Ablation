@@ -2,19 +2,23 @@ classdef GCodeLinear < GCodeCommand
     methods
         function paths = GetMovement(obj, deltaTime, initialAxisPos)
             %get start position
-            startPosition = initialAxisPos([GCodeAxisName.X, GCodeAxisName.Y]);
+            startPosition = initialAxisPos( ...
+                [GCodeAxisName.X, GCodeAxisName.Y, GCodeAxisName.Z]);
 
-            %get end position
-            endPosition = [nan, nan];
-            if isKey(obj.targetPosition, "X")
-                endPosition(1) = obj.targetPosition("X");
-            end
-            if isKey(obj.targetPosition, "Y")
-                endPosition(2) = obj.targetPosition("Y");
-            end
+            % %get end position
+            % endPosition = [nan, nan];
+            % if isKey(obj.targetPosition, "X")
+            %     endPosition(1) = obj.targetPosition("X");
+            % end
+            % if isKey(obj.targetPosition, "Y")
+            %     endPosition(2) = obj.targetPosition("Y");
+            % end
+
+            endPosition = lookup( ...
+                obj.targetPosition, ["X", "Y" ,"Z"], FallbackValue=startPosition);
             
-            nanInds = isnan(endPosition);
-            endPosition(nanInds) = startPosition(nanInds);
+            % nanInds = isnan(endPosition);
+            % endPosition(nanInds) = startPosition(nanInds);
             
             %calculate time
             distance = norm(endPosition - startPosition);

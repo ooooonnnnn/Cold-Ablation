@@ -90,6 +90,7 @@ classdef GCodeArc < GCodeCommand
                 start2center = norm(startPos - desiredPivot);
                 end2center = norm(endPos - desiredPivot);
                 if abs(end2center - start2center) > obj.radiusTolerance
+                    global COMMAND_NUM;
                     error("Pivot point has different distances from start and end points");
                 end
                 
