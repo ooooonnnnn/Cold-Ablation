@@ -5,21 +5,8 @@ classdef GCodeLinear < GCodeCommand
             startPosition = initialAxisPos( ...
                 [GCodeAxisName.X, GCodeAxisName.Y, GCodeAxisName.Z]);
 
-            % %get end position
-            % endPosition = [nan, nan];
-            % if isKey(obj.targetPosition, "X")
-            %     endPosition(1) = obj.targetPosition("X");
-            % end
-            % if isKey(obj.targetPosition, "Y")
-            %     endPosition(2) = obj.targetPosition("Y");
-            % end
-
-            endPosition = lookup( ...
-                obj.targetPosition, ["X", "Y" ,"Z"], FallbackValue=startPosition);
-            
-            % nanInds = isnan(endPosition);
-            % endPosition(nanInds) = startPosition(nanInds);
-            
+            endPosition = lookup_array( ...
+                obj.targetPosition, ["X", "Y" ,"Z"], startPosition);
             %calculate time
             distance = norm(endPosition - startPosition);
             time = deltaTime:deltaTime:(distance / obj.feedrate);
@@ -28,14 +15,18 @@ classdef GCodeLinear < GCodeCommand
             %calculate points
             x = linspace(startPosition(1), endPosition(1), numPoints);
             y = linspace(startPosition(2), endPosition(2), numPoints);
+            z = linspace(startPosition(3), endPosition(3), numPoints);
             s = linspace(obj.targetPosition("S"), obj.targetPosition("S"), numPoints);
+
             x = x(2:end);
             y = y(2:end);
+            z = z(2:end);
             s = s(2:end);
 
             %return path
             paths = dictionary(GCodeAxisName.X, {x}, ...
                 GCodeAxisName.Y, {y}, ...
+                "Z", {z}, ...
                 GCodeAxisName.S, {s});
         end
     end

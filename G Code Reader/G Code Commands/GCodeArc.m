@@ -12,11 +12,14 @@ classdef GCodeArc < GCodeCommand
         function paths = GetMovement(obj, deltaTime, initialAxisPos)
             startPos = initialAxisPos(["X", "Y"]);
 
-            endPos = nan(size(startPos));
-            keys = ["X" ,"Y"];
-            keysExist = isKey(obj.targetPosition, keys);
-            endPos(keysExist) = obj.targetPosition(keys(keysExist));
-            endPos(isnan(endPos)) = startPos(isnan(endPos));
+            % endPos = nan(size(startPos));
+            % keys = ["X" ,"Y"];
+            % keysExist = isKey(obj.targetPosition, keys);
+            % endPos(keysExist) = obj.targetPosition(keys(keysExist));
+            % endPos(isnan(endPos)) = startPos(isnan(endPos));
+
+            endPos = lookup_array( ...
+                obj.targetPosition, ["X", "Y"], startPos);
 
             [radius, center] = obj.CalculateCenterRadius( ...
                 startPos, endPos);
