@@ -49,5 +49,5 @@ function [time, movements] = Commands2Path(deltaTime, commands, axisName, axisIn
 
     %create time axis
     numTotalPoints = length(cell2mat(movements(axis)));
-    time = 0:deltaTime:deltaTime * numTotalPoints;
+    time = 0:deltaTime:deltaTime * (numTotalPoints - 1);
 end

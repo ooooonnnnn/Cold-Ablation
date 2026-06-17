@@ -1,4 +1,4 @@
-preprocessGCode('g codes files\complex pocket.nc');
+%preprocessGCode('g codes files\complex pocket.nc');
 
 
 %%
@@ -18,7 +18,7 @@ x = cell2mat(movements("X"));
 y = cell2mat(movements("Y"));
 z = cell2mat(movements("Z"));
 s = cell2mat(movements("S"));
-%%
+%% draw path with and without laser
 
 laserOn = s >= 0.5;
 laserOff = ~laserOn;
