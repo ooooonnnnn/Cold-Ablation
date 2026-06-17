@@ -2,7 +2,7 @@ function preprocessGCode(filepath)
     lines = readlines(filepath);
 
     %% change Z axis G1's to G0's
-    
+    lines = g1_z_to_g0(lines);
 
     %% collapse consecutive G0's
     lines = collapseG0s(lines);
